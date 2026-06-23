@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-navy-900 text-slate-100 font-sans antialiased;
+  margin: 0;
+}
+
+/* Reusable component classes */
+@layer components {
+  .container-x {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-6 lg:px-8;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-4 text-base font-bold transition-all duration-200 active:scale-[0.98];
+  }
+  .btn-primary {
+    @apply btn bg-brand-orange text-white shadow-[0_12px_30px_-8px_rgba(242,106,33,0.6)] hover:bg-brand-orangeDark;
+  }
+  .btn-ghost {
+    @apply btn border border-white/25 bg-white/5 text-white hover:bg-white/10;
+  }
+  .btn-wa {
+    @apply btn bg-[#25D366] text-white hover:brightness-95;
+  }
+  .eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full border border-brand-teal/40 bg-brand-teal/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.15em] text-brand-teal;
+  }
+  .card {
+    @apply rounded-2xl border border-white/10 bg-white/[0.03] p-6 shadow-card backdrop-blur;
+  }
+}
+
+/* Section reveal on scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
