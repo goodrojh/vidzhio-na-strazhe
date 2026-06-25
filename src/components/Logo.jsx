@@ -1,52 +1,56 @@
-// Reconstructed ВИДЖИО logo (eye mark + wordmark + taglines).
-// `light` = true renders white text for dark backgrounds.
+// Логотип ВИДЖИО — воссоздан по фирменному знаку (глаз + воркмарк + дескрипторы).
+// `light = true` — белый воркмарк для тёмного фона; иконка-глаз всегда в фирменном синем.
 export default function Logo({ light = true, withTagline = true, className = '' }) {
-  const text = light ? '#FFFFFF' : '#161C3A'
-  const eyeStroke = light ? '#FFFFFF' : '#161C3A'
-  const sub = light ? 'rgba(255,255,255,0.65)' : 'rgba(22,28,58,0.65)'
+  const text = light ? '#FFFFFF' : '#15315F'
+  const sub = light ? 'rgba(255,255,255,0.7)' : 'rgba(21,49,95,0.7)'
 
   return (
-    <span className={`inline-flex items-center gap-2.5 ${className}`} aria-label="ВИДЖИО">
-      <svg width="42" height="42" viewBox="0 0 64 64" className="shrink-0" aria-hidden="true">
+    <span className={`inline-flex items-center gap-2.5 ${className}`} aria-label="ВИДЖИО — группа компаний">
+      {/* Иконка-глаз */}
+      <svg width="46" height="46" viewBox="0 0 64 64" className="shrink-0" aria-hidden="true">
+        <defs>
+          <linearGradient id="vIris" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#3D8BE0" />
+            <stop offset="55%" stopColor="#2E6FBF" />
+            <stop offset="100%" stopColor="#1BA9AC" />
+          </linearGradient>
+          <linearGradient id="vBase" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#23508C" />
+            <stop offset="100%" stopColor="#15315F" />
+          </linearGradient>
+        </defs>
+        {/* верхнее «веко»-свуш */}
         <path
-          d="M8 33 C19 20, 45 20, 56 33 C45 46, 19 46, 8 33 Z"
-          fill="none"
-          stroke={eyeStroke}
-          strokeWidth="3"
-          strokeLinejoin="round"
+          d="M6 30 C20 12, 50 14, 60 27 C46 22, 22 23, 9 33 Z"
+          fill="url(#vBase)"
         />
-        <circle cx="32" cy="33" r="8.6" fill="#1BA9AC" />
-        <circle cx="32" cy="33" r="3.3" fill="#0E1226" />
-        <circle cx="29.4" cy="30.4" r="1.5" fill="#ffffff" />
+        {/* нижняя дуга глаза */}
         <path
-          d="M15 19 C25 13.5, 39 13.5, 48 19"
+          d="M9 33 C20 47, 46 47, 59 33"
           fill="none"
-          stroke="#F26A21"
-          strokeWidth="3"
+          stroke="url(#vBase)"
+          strokeWidth="4.5"
           strokeLinecap="round"
         />
+        {/* радужка */}
+        <circle cx="32" cy="33" r="11" fill="url(#vIris)" />
+        <circle cx="32" cy="33" r="5.2" fill="#10243F" />
+        <circle cx="29" cy="30" r="2.1" fill="#EAF3FF" />
       </svg>
+
+      {/* Текстовая часть */}
       <span className="flex flex-col leading-none">
         {withTagline && (
-          <span
-            className="text-[9px] font-semibold uppercase tracking-[0.22em]"
-            style={{ color: sub }}
-          >
+          <span className="text-[8.5px] font-bold uppercase tracking-[0.24em]" style={{ color: sub }}>
             группа компаний
           </span>
         )}
-        <span
-          className="font-display text-[22px] font-extrabold tracking-tight"
-          style={{ color: text }}
-        >
-          ВИД<span style={{ color: '#1BA9AC' }}>Ж</span>ИО
+        <span className="font-display text-[23px] font-extrabold tracking-tight" style={{ color: text }}>
+          ВИДЖИО
         </span>
         {withTagline && (
-          <span
-            className="text-[9px] font-medium tracking-[0.08em]"
-            style={{ color: sub }}
-          >
-            всё сработает вовремя
+          <span className="text-[7.5px] font-semibold uppercase tracking-[0.12em]" style={{ color: sub }}>
+            монтаж и обслуживание инженерных систем
           </span>
         )}
       </span>
