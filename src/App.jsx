@@ -4,8 +4,11 @@ import Logo from './components/Logo.jsx'
 /* ----------------------------- Контакты / ссылки ---------------------------- */
 const PHONE_HUMAN = '+7 925 127-91-13'
 const PHONE_RAW = '79251279113'
-const WA = (text) =>
-  `https://wa.me/${PHONE_RAW}?text=${encodeURIComponent(text)}`
+// MAX-мессенджер. У MAX НЕТ ссылки-чата по номеру телефона (в отличие от wa.me) —
+// нужен личный профиль вида https://max.ru/u/XXXXXXXX (или @бот / ссылка-приглашение).
+// Вставьте сюда вашу ссылку MAX — и все кнопки заработают.
+const MAX_URL = 'https://max.ru/'
+const MAX = (_text) => MAX_URL
 const TG = `https://t.me/+${PHONE_RAW}`
 const media = (file) => `${import.meta.env.BASE_URL}media/${file}`
 
@@ -96,9 +99,10 @@ const Ico = {
       <path d="M6 3h3l2 5-2 1c1 3 3 5 6 6l1-2 5 2v3c0 1-1 2-2 2A16 16 0 014 6c0-1 1-3 2-3z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/>
     </svg>
   ),
-  wa: (p) => (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...p}>
-      <path d="M12 2a10 10 0 00-8.5 15.2L2 22l4.9-1.5A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-2.9.9.9-2.8-.2-.3A8 8 0 1112 20zm4.4-5.6c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.8 1-.3.1-.5 0a6.5 6.5 0 01-1.9-1.2 7.2 7.2 0 01-1.3-1.7c-.1-.2 0-.4.1-.5l.4-.4.2-.4v-.4l-.8-1.8c-.2-.5-.4-.4-.5-.4h-.5a1 1 0 00-.7.3 3 3 0 00-.9 2.2c0 1.3.9 2.5 1.1 2.7s1.9 2.9 4.6 4c1.7.7 2.3.8 3.1.7.5-.1 1.4-.6 1.6-1.1s.2-1 .1-1.1-.2-.2-.5-.3z"/>
+  max: (p) => (
+    <svg viewBox="0 0 24 24" fill="none" {...p}>
+      <path d="M4 5h16a1 1 0 011 1v10a1 1 0 01-1 1H9l-4 3v-3H4a1 1 0 01-1-1V6a1 1 0 011-1z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/>
+      <path d="M8 12l2.5-3 3 4L16 9" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   ),
   tg: (p) => (
@@ -203,8 +207,8 @@ function Hero({ onCta }) {
             <button onClick={onCta} className="btn-primary text-base">
               Рассчитать стоимость за 2 минуты
             </button>
-            <a href={WA('Здравствуйте! Хочу рассчитать видеонаблюдение для загородного дома.')} target="_blank" rel="noreferrer" className="btn-wa">
-              <Ico.wa className="h-5 w-5" /> Написать в WhatsApp
+            <a href={MAX('Здравствуйте! Хочу рассчитать видеонаблюдение для загородного дома.')} target="_blank" rel="noreferrer" className="btn-max">
+              <Ico.max className="h-5 w-5" /> Написать в MAX
             </a>
           </div>
 
@@ -594,7 +598,7 @@ function Quiz({ openRef }) {
       `Заявка с калькулятора ВИДЖИО:%0A` +
       QUIZ.map((q, i) => `• ${q.q}: ${ans[i] || '—'}`).join('%0A') +
       `%0A• Ориентир: ${estimate}%0A• Телефон: ${phone}`
-    window.open(WA(decodeURIComponent(summary)), '_blank')
+    window.open(MAX(decodeURIComponent(summary)), '_blank')
     setDone(true)
   }
 
@@ -661,7 +665,7 @@ function Quiz({ openRef }) {
                     placeholder="+7 (___) ___-__-__"
                     className="mt-3 w-full rounded-xl border border-white/15 bg-navy-900 px-4 py-4 text-white placeholder-white/40 outline-none focus:border-brand-teal"
                   />
-                  <button type="submit" className="btn-primary mt-4 w-full">Получить смету в WhatsApp</button>
+                  <button type="submit" className="btn-primary mt-4 w-full">Получить смету в MAX</button>
                   <p className="mt-3 text-center text-xs text-white/50">Нажимая кнопку, вы соглашаетесь с политикой обработки персональных данных.</p>
                 </form>
               )}
@@ -718,7 +722,7 @@ function FinalCta() {
   const [phone, setPhone] = useState('')
   const submit = (e) => {
     e.preventDefault()
-    window.open(WA(`Здравствуйте! Меня зовут ${name || '—'}, мой телефон ${phone}. Хочу получить расчёт со скидкой 10%.`), '_blank')
+    window.open(MAX(`Здравствуйте! Меня зовут ${name || '—'}, мой телефон ${phone}. Хочу получить расчёт со скидкой 10%.`), '_blank')
   }
   return (
     <section id="final" className="relative overflow-hidden py-20">
@@ -737,8 +741,8 @@ function FinalCta() {
           <button type="submit" className="btn-primary sm:col-span-2">Получить расчёт со скидкой 10%</button>
         </form>
         <div className="mx-auto mt-5 flex max-w-2xl flex-col gap-3 sm:flex-row sm:justify-center">
-          <a href={WA('Здравствуйте! Хочу расчёт видеонаблюдения для дома.')} target="_blank" rel="noreferrer" className="btn-wa flex-1 sm:flex-none">
-            <Ico.wa className="h-5 w-5" /> WhatsApp
+          <a href={MAX('Здравствуйте! Хочу расчёт видеонаблюдения для дома.')} target="_blank" rel="noreferrer" className="btn-max flex-1 sm:flex-none">
+            <Ico.max className="h-5 w-5" /> MAX
           </a>
           <a href={TG} target="_blank" rel="noreferrer" className="btn-ghost flex-1 sm:flex-none">
             <Ico.tg className="h-5 w-5 text-brand-teal" /> Telegram
@@ -770,7 +774,7 @@ function Footer() {
           <div className="mt-2">Москва и Московская область</div>
           <div className="mt-2">Пн–Вс, 9:00–21:00</div>
           <div className="mt-3 flex gap-3">
-            <a href={WA('Здравствуйте!')} target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-lg bg-white/5 text-[#25D366] hover:bg-white/10"><Ico.wa className="h-5 w-5" /></a>
+            <a href={MAX('Здравствуйте!')} target="_blank" rel="noreferrer" aria-label="Написать в MAX" className="grid h-10 w-10 place-items-center rounded-lg bg-white/5 text-[#9B4DFF] hover:bg-white/10"><Ico.max className="h-5 w-5" /></a>
             <a href={TG} target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-lg bg-white/5 text-brand-teal hover:bg-white/10"><Ico.tg className="h-5 w-5" /></a>
           </div>
         </div>
@@ -797,7 +801,7 @@ function MobileBar({ onCta }) {
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-navy-900/95 p-3 backdrop-blur md:hidden">
       <div className="flex gap-2">
         <button onClick={onCta} className="btn-primary flex-1 !py-3 text-sm">Рассчитать</button>
-        <a href={WA('Здравствуйте! Хочу расчёт видеонаблюдения.')} target="_blank" rel="noreferrer" className="btn-wa !px-4 !py-3"><Ico.wa className="h-5 w-5" /></a>
+        <a href={MAX('Здравствуйте! Хочу расчёт видеонаблюдения.')} target="_blank" rel="noreferrer" className="btn-max !px-4 !py-3"><Ico.max className="h-5 w-5" /></a>
         <a href={`tel:+${PHONE_RAW}`} className="btn-ghost !px-4 !py-3"><Ico.phone className="h-5 w-5" /></a>
       </div>
     </div>
@@ -828,7 +832,7 @@ function ExitPopup({ onCta }) {
         <h3 className="mt-3 font-display text-2xl font-extrabold">Уже уходите?</h3>
         <p className="mt-2 text-white/75">Заберите <b className="text-brand-teal">бесплатный аудит безопасности дома</b> + смету за 3 часа. И скидку 10% на монтаж.</p>
         <button onClick={() => { setShow(false); onCta() }} className="btn-primary mt-5 w-full">Получить аудит бесплатно</button>
-        <a href={WA('Здравствуйте! Хочу бесплатный аудит безопасности дома и смету.')} target="_blank" rel="noreferrer" className="btn-wa mt-3 w-full"><Ico.wa className="h-5 w-5" /> Написать в WhatsApp</a>
+        <a href={MAX('Здравствуйте! Хочу бесплатный аудит безопасности дома и смету.')} target="_blank" rel="noreferrer" className="btn-max mt-3 w-full"><Ico.max className="h-5 w-5" /> Написать в MAX</a>
       </div>
     </div>
   )

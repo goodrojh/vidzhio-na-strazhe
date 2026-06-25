@@ -29,8 +29,8 @@ body {
   .btn-ghost {
     @apply btn border border-white/25 bg-white/5 text-white hover:bg-white/10;
   }
-  .btn-wa {
-    @apply btn bg-[#25D366] text-white hover:brightness-95;
+  .btn-max {
+    @apply btn bg-gradient-to-r from-[#6E54FF] to-[#B24DFF] text-white hover:brightness-110;
   }
   .eyebrow {
     @apply inline-flex items-center gap-2 rounded-full border border-brand-teal/40 bg-brand-teal/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.15em] text-brand-teal;
