@@ -11,6 +11,30 @@ const MAX_URL = 'https://max.ru/'
 const MAX = (_text) => MAX_URL
 const TG = `https://t.me/+${PHONE_RAW}`
 const media = (file) => `${import.meta.env.BASE_URL}media/${file}`
+const POLICY_HREF = `${import.meta.env.BASE_URL}politika.html`
+
+/* Чекбокс согласия на обработку персональных данных (152-ФЗ). */
+function ConsentCheck({ checked, onChange, id }) {
+  return (
+    <label htmlFor={id} className="flex cursor-pointer items-start gap-2.5 text-left text-xs leading-snug text-white/55">
+      <input
+        id={id}
+        type="checkbox"
+        required
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="mt-0.5 h-4 w-4 shrink-0 accent-brand-orange"
+      />
+      <span>
+        Я даю согласие на обработку персональных данных в соответствии с Федеральным законом
+        № 152-ФЗ «О персональных данных» и принимаю{' '}
+        <a href={POLICY_HREF} target="_blank" rel="noreferrer" className="underline hover:text-white">
+          Политику обработки персональных данных
+        </a>.
+      </span>
+    </label>
+  )
+}
 
 /* ------------------------------- Утилиты UI -------------------------------- */
 function Reveal({ children, className = '', as: Tag = 'div', delay = 0 }) {
@@ -574,6 +598,7 @@ function Quiz({ openRef }) {
   const [ans, setAns] = useState({})
   const [phone, setPhone] = useState('')
   const [done, setDone] = useState(false)
+  const [agree, setAgree] = useState(false)
   const total = QUIZ.length
 
   const estimate = useMemo(() => {
@@ -598,6 +623,7 @@ function Quiz({ openRef }) {
 
   const submit = (e) => {
     e.preventDefault()
+    if (!agree) return
     const summary =
       `Заявка с калькулятора ВИДЖИО:%0A` +
       QUIZ.map((q, i) => `• ${q.q}: ${ans[i] || '—'}`).join('%0A') +
@@ -669,8 +695,10 @@ function Quiz({ openRef }) {
                     placeholder="+7 (___) ___-__-__"
                     className="mt-3 w-full rounded-xl border border-white/15 bg-navy-900 px-4 py-4 text-white placeholder-white/40 outline-none focus:border-brand-teal"
                   />
-                  <button type="submit" className="btn-primary mt-4 w-full">Получить смету в MAX</button>
-                  <p className="mt-3 text-center text-xs text-white/50">Нажимая кнопку, вы соглашаетесь с политикой обработки персональных данных.</p>
+                  <div className="mt-4">
+                    <ConsentCheck id="consent-quiz" checked={agree} onChange={setAgree} />
+                  </div>
+                  <button type="submit" disabled={!agree} className="btn-primary mt-4 w-full disabled:cursor-not-allowed disabled:opacity-50">Получить смету в MAX</button>
                 </form>
               )}
             </div>
@@ -724,8 +752,10 @@ function Faq() {
 function FinalCta() {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
+  const [agree, setAgree] = useState(false)
   const submit = (e) => {
     e.preventDefault()
+    if (!agree) return
     window.open(MAX(`Здравствуйте! Меня зовут ${name || '—'}, мой телефон ${phone}. Хочу получить расчёт со скидкой 10%.`), '_blank')
   }
   return (
@@ -742,7 +772,10 @@ function FinalCta() {
         <form onSubmit={submit} className="mx-auto mt-8 grid max-w-2xl gap-3 sm:grid-cols-2">
           <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Ваше имя" className="rounded-xl border border-white/15 bg-navy-900/80 px-4 py-4 text-white placeholder-white/40 outline-none focus:border-brand-teal" />
           <input required type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+7 (___) ___-__-__" className="rounded-xl border border-white/15 bg-navy-900/80 px-4 py-4 text-white placeholder-white/40 outline-none focus:border-brand-teal" />
-          <button type="submit" className="btn-primary sm:col-span-2">Получить расчёт со скидкой 10%</button>
+          <div className="sm:col-span-2">
+            <ConsentCheck id="consent-final" checked={agree} onChange={setAgree} />
+          </div>
+          <button type="submit" disabled={!agree} className="btn-primary sm:col-span-2 disabled:cursor-not-allowed disabled:opacity-50">Получить расчёт со скидкой 10%</button>
         </form>
         <div className="mx-auto mt-5 flex max-w-2xl flex-col gap-3 sm:flex-row sm:justify-center">
           <a href={MAX('Здравствуйте! Хочу расчёт видеонаблюдения для дома.')} target="_blank" rel="noreferrer" className="btn-max flex-1 sm:flex-none">
@@ -775,6 +808,8 @@ function Footer() {
         <div className="text-sm text-white/70">
           <div className="font-bold text-white">Контакты</div>
           <a href={`tel:+${PHONE_RAW}`} className="mt-3 block hover:text-brand-teal">{PHONE_HUMAN}</a>
+          <a href="tel:+74956986108" className="mt-1 block hover:text-brand-teal">+7 (495) 698-61-08</a>
+          <a href="mailto:vidzhio@yandex.ru" className="mt-1 block hover:text-brand-teal">vidzhio@yandex.ru</a>
           <div className="mt-2">Москва и Московская область</div>
           <div className="mt-2">Пн–Вс, 9:00–21:00</div>
           <div className="mt-3 flex gap-3">
@@ -784,9 +819,13 @@ function Footer() {
         </div>
         <div className="text-sm text-white/60">
           <div className="font-bold text-white">Реквизиты</div>
-          <p className="mt-3">ООО «Виджио» · ИНН 7723877678</p>
-          <p className="mt-2">Цены на сайте носят информационный характер и не являются публичной офертой.</p>
-          <a href="#" className="mt-2 inline-block underline hover:text-white">Политика конфиденциальности</a>
+          <p className="mt-3">ООО «Виджио»</p>
+          <p className="mt-1">ИНН 7723877678 · КПП 772301001</p>
+          <p className="mt-1">ОГРН 1137746582270</p>
+          <p className="mt-1">109469, г. Москва, ул. Братиславская, д. 27, корп. 1, пом. VI, ком. 12–20</p>
+          <p className="mt-1">Лицензия МЧС № 77-06-2022-005285 от 29.12.2022</p>
+          <p className="mt-2 text-white/45">Цены на сайте носят информационный характер и не являются публичной офертой.</p>
+          <a href={POLICY_HREF} target="_blank" rel="noreferrer" className="mt-2 inline-block underline hover:text-white">Политика обработки персональных данных</a>
         </div>
       </div>
       <div className="container-x mt-10 border-t border-white/10 pt-6 text-center text-xs text-white/45">
