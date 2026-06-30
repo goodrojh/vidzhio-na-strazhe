@@ -178,16 +178,20 @@ function Hero({ onCta }) {
   const c = useCountdown()
   return (
     <section className="relative flex min-h-[100svh] items-center overflow-hidden pt-20">
-      <video
-        className="absolute inset-0 h-full w-full object-cover"
-        autoPlay
-        muted
-        loop
-        playsInline
-        poster={media('hero2-cables-start.png')}
-      >
-        <source src={media('hero-video.mp4')} type="video/mp4" />
-      </video>
+      <div className="absolute inset-0 h-full w-full">
+        <img
+          src={media('hero2-cables-start.png')}
+          alt="Загородный дом с электрощитом и проложенными трассами для камер видеонаблюдения"
+          className="absolute inset-0 h-full w-full object-cover"
+          fetchpriority="high"
+        />
+        <img
+          src={media('hero2-cables-end.png')}
+          alt=""
+          aria-hidden="true"
+          className="cable-glow absolute inset-0 h-full w-full object-cover"
+        />
+      </div>
       <div className="absolute inset-0 bg-gradient-to-r from-navy-900 via-navy-900/85 to-navy-900/30" />
       <div className="absolute inset-0 bg-gradient-to-t from-navy-900 via-transparent to-navy-900/40" />
 

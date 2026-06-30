@@ -40,6 +40,24 @@ body {
   }
 }
 
+/* Hero: «провода растекаются к камерам» — энергия пробегает по кабелям от щитка.
+   Кросс-фейд между кадром без подсветки и кадром со светящимися кабелями. */
+@keyframes cableFlow {
+  0% { opacity: 0; }
+  28% { opacity: 1; }
+  72% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.cable-glow {
+  animation: cableFlow 5.5s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cable-glow {
+    animation: none;
+    opacity: 1;
+  }
+}
+
 /* Section reveal on scroll */
 .reveal {
   opacity: 0;
