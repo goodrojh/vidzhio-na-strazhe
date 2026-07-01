@@ -14,21 +14,22 @@ const media = (file) => `${import.meta.env.BASE_URL}media/${file}`
 const POLICY_HREF = `${import.meta.env.BASE_URL}politika.html`
 
 /* Чекбокс согласия на обработку персональных данных (152-ФЗ). */
-function ConsentCheck({ checked, onChange, id }) {
+function ConsentCheck({ checked, onChange, id, tone = 'light' }) {
+  const base = tone === 'dark' ? 'text-cream/60' : 'text-ink-500'
   return (
-    <label htmlFor={id} className="flex cursor-pointer items-start gap-2.5 text-left text-xs leading-snug text-white/55">
+    <label htmlFor={id} className={`flex cursor-pointer items-start gap-2.5 text-left text-xs leading-snug ${base}`}>
       <input
         id={id}
         type="checkbox"
         required
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="mt-0.5 h-4 w-4 shrink-0 accent-brand-orange"
+        className="mt-0.5 h-4 w-4 shrink-0 accent-gold"
       />
       <span>
         Я даю согласие на обработку персональных данных в соответствии с Федеральным законом
         № 152-ФЗ «О персональных данных» и принимаю{' '}
-        <a href={POLICY_HREF} target="_blank" rel="noreferrer" className="underline hover:text-white">
+        <a href={POLICY_HREF} target="_blank" rel="noreferrer" className="underline hover:text-gold">
           Политику обработки персональных данных
         </a>.
       </span>
@@ -56,11 +57,7 @@ function Reveal({ children, className = '', as: Tag = 'div', delay = 0 }) {
     return () => io.disconnect()
   }, [])
   return (
-    <Tag
-      ref={ref}
-      style={{ transitionDelay: `${delay}ms` }}
-      className={`reveal ${shown ? 'is-visible' : ''} ${className}`}
-    >
+    <Tag ref={ref} style={{ transitionDelay: `${delay}ms` }} className={`reveal ${shown ? 'is-visible' : ''} ${className}`}>
       {children}
     </Tag>
   )
@@ -70,7 +67,7 @@ function useCountdown() {
   const target = useMemo(() => {
     const now = new Date()
     const d = new Date(now)
-    const day = now.getDay() // 0 = Вс
+    const day = now.getDay()
     const daysUntilSunday = (7 - day) % 7
     d.setDate(now.getDate() + daysUntilSunday)
     d.setHours(23, 59, 59, 0)
@@ -83,85 +80,33 @@ function useCountdown() {
     return () => clearInterval(t)
   }, [target])
   const s = Math.max(0, Math.floor(left / 1000))
-  return {
-    d: Math.floor(s / 86400),
-    h: Math.floor((s % 86400) / 3600),
-    m: Math.floor((s % 3600) / 60),
-    s: s % 60,
-  }
+  return { d: Math.floor(s / 86400), h: Math.floor((s % 86400) / 3600), m: Math.floor((s % 3600) / 60), s: s % 60 }
 }
-
 const pad = (n) => String(n).padStart(2, '0')
 
 /* --------------------------------- Иконки ---------------------------------- */
 const Ico = {
-  shield: (p) => (
-    <svg viewBox="0 0 24 24" fill="none" {...p}>
-      <path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/>
-      <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  ),
-  cam: (p) => (
-    <svg viewBox="0 0 24 24" fill="none" {...p}>
-      <rect x="3" y="7" width="13" height="10" rx="2" stroke="currentColor" strokeWidth="1.7"/>
-      <path d="M16 10l5-3v10l-5-3" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/>
-    </svg>
-  ),
-  bell: (p) => (
-    <svg viewBox="0 0 24 24" fill="none" {...p}>
-      <path d="M6 16V11a6 6 0 1112 0v5l2 2H4l2-2z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/>
-      <path d="M10 20a2 2 0 004 0" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-    </svg>
-  ),
-  fire: (p) => (
-    <svg viewBox="0 0 24 24" fill="none" {...p}>
-      <path d="M12 3c1 3-2 4-2 7a2 2 0 104 0c0 0 2 1 2 4a4 4 0 11-8 0c0-5 4-7 4-11z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/>
-    </svg>
-  ),
-  phone: (p) => (
-    <svg viewBox="0 0 24 24" fill="none" {...p}>
-      <path d="M6 3h3l2 5-2 1c1 3 3 5 6 6l1-2 5 2v3c0 1-1 2-2 2A16 16 0 014 6c0-1 1-3 2-3z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/>
-    </svg>
-  ),
-  max: (p) => (
-    <svg viewBox="0 0 24 24" fill="none" {...p}>
-      <path d="M4 5h16a1 1 0 011 1v10a1 1 0 01-1 1H9l-4 3v-3H4a1 1 0 01-1-1V6a1 1 0 011-1z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/>
-      <path d="M8 12l2.5-3 3 4L16 9" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  ),
-  tg: (p) => (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...p}>
-      <path d="M21.9 4.3l-3.3 15.6c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.3-5 9.1-8.2c.4-.3-.1-.5-.6-.2L6.4 13.2 1.6 11.7c-1-.3-1-1 .2-1.5l18.7-7.2c.9-.3 1.6.2 1.4 1.3z"/>
-    </svg>
-  ),
-  clock: (p) => (
-    <svg viewBox="0 0 24 24" fill="none" {...p}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.7"/>
-      <path d="M12 7v5l3 2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-    </svg>
-  ),
-  drop: (p) => (
-    <svg viewBox="0 0 24 24" fill="none" {...p}>
-      <path d="M12 3s6 6.5 6 11a6 6 0 11-12 0c0-4.5 6-11 6-11z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/>
-    </svg>
-  ),
-  lock: (p) => (
-    <svg viewBox="0 0 24 24" fill="none" {...p}>
-      <rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.7"/>
-      <path d="M8 10V8a4 4 0 018 0v2" stroke="currentColor" strokeWidth="1.7"/>
-    </svg>
-  ),
-  chevron: (p) => (
-    <svg viewBox="0 0 24 24" fill="none" {...p}>
-      <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  ),
-  check: (p) => (
-    <svg viewBox="0 0 24 24" fill="none" {...p}>
-      <path d="M5 12l5 5L20 7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  ),
+  shield: (p) => (<svg viewBox="0 0 24 24" fill="none" {...p}><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>),
+  cam: (p) => (<svg viewBox="0 0 24 24" fill="none" {...p}><rect x="3" y="7" width="13" height="10" rx="2" stroke="currentColor" strokeWidth="1.6"/><path d="M16 10l5-3v10l-5-3" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/></svg>),
+  bell: (p) => (<svg viewBox="0 0 24 24" fill="none" {...p}><path d="M6 16V11a6 6 0 1112 0v5l2 2H4l2-2z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/><path d="M10 20a2 2 0 004 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>),
+  fire: (p) => (<svg viewBox="0 0 24 24" fill="none" {...p}><path d="M12 3c1 3-2 4-2 7a2 2 0 104 0c0 0 2 1 2 4a4 4 0 11-8 0c0-5 4-7 4-11z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/></svg>),
+  phone: (p) => (<svg viewBox="0 0 24 24" fill="none" {...p}><path d="M6 3h3l2 5-2 1c1 3 3 5 6 6l1-2 5 2v3c0 1-1 2-2 2A16 16 0 014 6c0-1 1-3 2-3z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/></svg>),
+  max: (p) => (<svg viewBox="0 0 24 24" fill="none" {...p}><path d="M4 5h16a1 1 0 011 1v10a1 1 0 01-1 1H9l-4 3v-3H4a1 1 0 01-1-1V6a1 1 0 011-1z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/><path d="M8 12l2.5-3 3 4L16 9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>),
+  tg: (p) => (<svg viewBox="0 0 24 24" fill="currentColor" {...p}><path d="M21.9 4.3l-3.3 15.6c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.3-5 9.1-8.2c.4-.3-.1-.5-.6-.2L6.4 13.2 1.6 11.7c-1-.3-1-1 .2-1.5l18.7-7.2c.9-.3 1.6.2 1.4 1.3z"/></svg>),
+  clock: (p) => (<svg viewBox="0 0 24 24" fill="none" {...p}><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6"/><path d="M12 7v5l3 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>),
+  lock: (p) => (<svg viewBox="0 0 24 24" fill="none" {...p}><rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.6"/><path d="M8 10V8a4 4 0 018 0v2" stroke="currentColor" strokeWidth="1.6"/></svg>),
+  wallet: (p) => (<svg viewBox="0 0 24 24" fill="none" {...p}><rect x="3" y="6" width="18" height="13" rx="2" stroke="currentColor" strokeWidth="1.6"/><path d="M16 12h3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/><path d="M3 9h13" stroke="currentColor" strokeWidth="1.6"/></svg>),
+  route: (p) => (<svg viewBox="0 0 24 24" fill="none" {...p}><circle cx="6" cy="6" r="2.4" stroke="currentColor" strokeWidth="1.6"/><circle cx="18" cy="18" r="2.4" stroke="currentColor" strokeWidth="1.6"/><path d="M8.4 6H15a3 3 0 010 6H9a3 3 0 000 6h6.6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>),
+  chevron: (p) => (<svg viewBox="0 0 24 24" fill="none" {...p}><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>),
+  check: (p) => (<svg viewBox="0 0 24 24" fill="none" {...p}><path d="M5 12l5 5L20 7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>),
 }
+
+const NAV = [
+  { href: '#projects', label: 'Проекты' },
+  { href: '#team', label: 'Команда' },
+  { href: '#reviews', label: 'Отзывы' },
+  { href: '#faq', label: 'Вопросы' },
+]
 
 /* --------------------------------- Шапка ----------------------------------- */
 function Header({ onCta }) {
@@ -172,26 +117,21 @@ function Header({ onCta }) {
     window.addEventListener('scroll', f, { passive: true })
     return () => window.removeEventListener('scroll', f)
   }, [])
+  const link = solid ? 'text-ink-500 hover:text-gold' : 'text-cream/80 hover:text-white'
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-40 transition-all duration-300 ${
-        solid ? 'bg-navy-900/90 shadow-lg backdrop-blur' : 'bg-transparent'
-      }`}
-    >
+    <header className={`fixed inset-x-0 top-0 z-40 transition-all duration-300 ${solid ? 'bg-cream/95 shadow-[0_10px_30px_-20px_rgba(21,21,26,0.4)] backdrop-blur' : 'bg-transparent'}`}>
       <div className="container-x flex items-center justify-between py-3">
         <Logo />
-        <div className="hidden items-center gap-6 md:flex">
-          <span className="text-sm text-white/70">Москва и МО</span>
-          <a href={`tel:+${PHONE_RAW}`} className="text-sm font-bold text-white hover:text-brand-teal">
-            {PHONE_HUMAN}
-          </a>
-          <button onClick={onCta} className="btn-primary !py-3 !px-5 text-sm">
-            Рассчитать стоимость
-          </button>
+        <nav className="hidden items-center gap-7 lg:flex">
+          {NAV.map((n) => (
+            <a key={n.href} href={n.href} className={`text-sm font-semibold transition-colors ${link}`}>{n.label}</a>
+          ))}
+        </nav>
+        <div className="hidden items-center gap-5 md:flex">
+          <a href={`tel:+${PHONE_RAW}`} className={`text-sm font-bold transition-colors ${solid ? 'text-ink hover:text-gold' : 'text-white'}`}>{PHONE_HUMAN}</a>
+          <button onClick={onCta} className="btn-primary !py-3 !px-5 text-sm">Рассчитать</button>
         </div>
-        <a href={`tel:+${PHONE_RAW}`} className="btn-primary !p-3 md:hidden" aria-label="Позвонить">
-          <Ico.phone className="h-5 w-5" />
-        </a>
+        <a href={`tel:+${PHONE_RAW}`} className="btn-primary !p-3 md:hidden" aria-label="Позвонить"><Ico.phone className="h-5 w-5" /></a>
       </div>
     </header>
   )
@@ -201,62 +141,75 @@ function Header({ onCta }) {
 function Hero({ onCta }) {
   const c = useCountdown()
   return (
-    <section className="relative flex min-h-[100svh] items-center overflow-hidden pt-20">
-      <video
-        className="absolute inset-0 h-full w-full object-cover"
-        autoPlay
-        muted
-        loop
-        playsInline
-        poster={media('hero-cozy-end.png')}
-      >
+    <section id="top" className="relative flex min-h-[100svh] items-center overflow-hidden bg-ink pt-20 text-cream">
+      <video className="absolute inset-0 h-full w-full object-cover opacity-90" autoPlay muted loop playsInline poster={media('hero-cozy-end.png')}>
         <source src={media('hero-cozy.mp4')} type="video/mp4" />
       </video>
-      <div className="absolute inset-0 bg-gradient-to-r from-navy-900 via-navy-900/85 to-navy-900/30" />
-      <div className="absolute inset-0 bg-gradient-to-t from-navy-900 via-transparent to-navy-900/40" />
+      <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/30" />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink via-transparent to-ink/40" />
 
       <div className="container-x relative z-10 py-12">
         <div className="max-w-2xl">
           <span className="eyebrow animate-fadeUp">Проектирование · монтаж · обслуживание</span>
-          <h1 className="mt-5 font-display text-4xl font-extrabold leading-[1.05] sm:text-5xl lg:text-6xl">
-            Установим видеонаблюдение и безопасность в вашем доме за{' '}
-            <span className="text-brand-teal">2–3 дня</span>
+          <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.02] sm:text-6xl lg:text-7xl">
+            Видеонаблюдение и безопасность вашего дома —{' '}
+            <span className="text-gold">под ключ за 2–3 дня</span>
           </h1>
-          <p className="mt-5 max-w-xl text-lg text-white/80">
-            Проектируем, монтируем и обслуживаем под ключ: камеры 4K, охранную сигнализацию
-            и датчики — всё в одном приложении. Гарантия 5 лет, поддержка 24/7.
+          <p className="mt-6 max-w-xl text-lg text-cream/80">
+            Проектируем, монтируем и обслуживаем сами: камеры 4K, охранная сигнализация и датчики —
+            всё в одном приложении. Гарантия 5 лет, поддержка 24/7.
           </p>
 
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <button onClick={onCta} className="btn-primary text-base">
-              Рассчитать стоимость за 2 минуты
-            </button>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <button onClick={onCta} className="btn-primary text-base">Рассчитать стоимость за 2 минуты</button>
             <a href={MAX('Здравствуйте! Хочу рассчитать видеонаблюдение для загородного дома.')} target="_blank" rel="noreferrer" className="btn-max">
               <Ico.max className="h-5 w-5" /> Написать в MAX
             </a>
           </div>
 
-          <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm text-white/75">
+          <div className="mt-9 flex flex-wrap gap-x-7 gap-y-3 text-sm text-cream/75">
             {['14 лет на рынке', '850+ домов', 'Гарантия 5 лет', 'Работаем по договору'].map((t) => (
-              <span key={t} className="inline-flex items-center gap-2">
-                <Ico.check className="h-4 w-4 text-brand-teal" /> {t}
-              </span>
+              <span key={t} className="inline-flex items-center gap-2"><Ico.check className="h-4 w-4 text-gold" /> {t}</span>
             ))}
           </div>
 
-          {/* Плашка акции */}
-          <div className="mt-8 inline-flex flex-wrap items-center gap-4 rounded-2xl border border-brand-orange/30 bg-brand-orange/10 px-5 py-3">
-            <span className="text-sm font-bold text-brand-orange">🔥 −10% на монтаж до конца недели</span>
-            <span className="flex items-center gap-1.5 font-display text-lg font-bold tabular-nums">
+          <div className="mt-9 inline-flex flex-wrap items-center gap-4 rounded-2xl border border-gold/40 bg-white/5 px-5 py-3 backdrop-blur-sm">
+            <span className="text-sm font-bold text-gold">−10% на монтаж до конца недели</span>
+            <span className="flex items-center gap-1.5 font-display text-xl font-semibold tabular-nums">
               {[['дн', c.d], ['ч', c.h], ['мин', c.m], ['сек', c.s]].map(([u, v]) => (
                 <span key={u} className="flex flex-col items-center">
-                  <span className="rounded-md bg-navy-700 px-2 py-1">{pad(v)}</span>
-                  <span className="mt-0.5 text-[9px] font-medium uppercase text-white/50">{u}</span>
+                  <span className="rounded-md bg-white/10 px-2 py-1 text-cream">{pad(v)}</span>
+                  <span className="mt-0.5 text-[9px] font-medium uppercase tracking-wide text-cream/50">{u}</span>
                 </span>
               ))}
             </span>
           </div>
         </div>
+      </div>
+    </section>
+  )
+}
+
+/* ---------------------------- Преимущества (стрип) ------------------------- */
+function Advantages() {
+  const a = [
+    { i: Ico.route, t: 'Бесплатный выезд инженера', d: 'Замер и оценка объекта в течение 24 часов.' },
+    { i: Ico.clock, t: 'Монтаж за 2–3 дня', d: 'Свои штатные бригады, чистая работа.' },
+    { i: Ico.shield, t: 'Гарантия 5 лет', d: 'Фиксируем в договоре, сервис — бесплатно.' },
+    { i: Ico.wallet, t: 'Рассрочка 0%', d: 'До 12 месяцев без переплат и банка.' },
+  ]
+  return (
+    <section className="bg-cream py-14">
+      <div className="container-x grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {a.map((x, i) => (
+          <Reveal key={x.t} delay={i * 70} className="flex items-start gap-4">
+            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-gold-soft text-gold"><x.i className="h-6 w-6" /></span>
+            <div>
+              <h3 className="text-base font-bold text-ink">{x.t}</h3>
+              <p className="mt-1 text-sm text-ink-500">{x.d}</p>
+            </div>
+          </Reveal>
+        ))}
       </div>
     </section>
   )
@@ -271,29 +224,26 @@ function Pain() {
     { i: Ico.shield, t: 'Никто не отвечает', d: 'Камеры от одних, сигнализация от других — за систему в целом не отвечает никто.' },
   ]
   return (
-    <section className="relative py-20">
-      <img src={media('pain-house-night.jpg')} alt="" className="absolute inset-0 h-full w-full object-cover opacity-20" />
-      <div className="absolute inset-0 bg-navy-900/80" />
-      <div className="container-x relative">
+    <section className="bg-cream-200 py-20">
+      <div className="container-x">
         <Reveal>
-          <h2 className="max-w-2xl font-display text-3xl font-extrabold sm:text-4xl">
-            Пока вас нет, дом остаётся один на один с рисками
-          </h2>
+          <span className="eyebrow">Зачем это нужно</span>
+          <h2 className="mt-4 max-w-2xl text-4xl font-semibold sm:text-5xl">Пока вас нет, дом остаётся один на один с рисками</h2>
         </Reveal>
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {pains.map((p, idx) => (
             <Reveal key={p.t} delay={idx * 70} className="card">
-              <p.i className="h-9 w-9 text-brand-orange" />
-              <h3 className="mt-4 text-lg font-bold">{p.t}</h3>
-              <p className="mt-2 text-sm text-white/70">{p.d}</p>
+              <p.i className="h-9 w-9 text-gold" />
+              <h3 className="mt-4 text-lg font-bold text-ink">{p.t}</h3>
+              <p className="mt-2 text-sm text-ink-500">{p.d}</p>
             </Reveal>
           ))}
         </div>
-        <Reveal delay={120} className="mt-10 rounded-2xl border border-brand-teal/30 bg-brand-teal/[0.07] p-6 sm:p-8">
-          <p className="text-lg text-white/90">
-            <span className="font-bold text-brand-teal">ВИДЖИО</span> собирает единый «организм» безопасности:
-            камеры видят ночью на 50 м, тревога летит вам в приложение за секунды, а за всю систему отвечает
-            одна команда. <span className="font-bold">Всё сработает вовремя.</span>
+        <Reveal delay={120} className="mt-8 rounded-2xl border border-gold/30 bg-gold-soft/60 p-6 sm:p-8">
+          <p className="text-lg text-ink">
+            <span className="font-bold text-gold">ВИДЖИО</span> собирает единый «организм» безопасности: камеры видят
+            ночью на 50 м, тревога летит вам в приложение за секунды, а за всю систему отвечает одна команда.{' '}
+            <span className="font-bold">Всё сработает вовремя.</span>
           </p>
         </Reveal>
       </div>
@@ -301,81 +251,40 @@ function Pain() {
   )
 }
 
-/* --------------------------------- Комплекты ------------------------------- */
+/* -------------------------------- Комплекты -------------------------------- */
 function Kits({ onPick }) {
   const kits = [
-    {
-      name: 'ОБЗОР',
-      tag: 'Видеонаблюдение под ключ',
-      price: 'от 159 000 ₽',
-      img: 'kit-obzor-camera.jpg',
-      featured: false,
-      items: [
-        '8 IP-камер 4K, ИК-подсветка до 50 м',
-        'Видеорегистратор 4 ТБ, архив до 30 суток',
-        'Мобильное приложение, просмотр 24/7',
-        'Монтаж, настройка и обучение',
-        'Гарантия 5 лет',
-      ],
-    },
-    {
-      name: 'БАСТИОН',
-      tag: 'Комплексная безопасность',
-      price: 'от 390 000 ₽',
-      img: 'kit-bastion-system.jpg',
-      featured: true,
-      items: [
-        'Всё из комплекта «Обзор», плюс:',
-        'Охранная сигнализация + датчики движения',
-        'Датчики дыма, протечки и газа',
-        'Умные замки и контроль доступа',
-        'Интеграция с умным домом и сценариями',
-        'Приоритетная поддержка 24/7',
-      ],
-    },
+    { name: 'ОБЗОР', tag: 'Видеонаблюдение под ключ', price: 'от 159 000 ₽', img: 'kit-obzor-camera.jpg', featured: false,
+      items: ['8 IP-камер 4K, ИК-подсветка до 50 м', 'Видеорегистратор 4 ТБ, архив до 30 суток', 'Мобильное приложение, просмотр 24/7', 'Монтаж, настройка и обучение', 'Гарантия 5 лет'] },
+    { name: 'БАСТИОН', tag: 'Комплексная безопасность', price: 'от 390 000 ₽', img: 'kit-bastion-system.jpg', featured: true,
+      items: ['Всё из комплекта «Обзор», плюс:', 'Охранная сигнализация + датчики движения', 'Датчики дыма, протечки и газа', 'Умные замки и контроль доступа', 'Интеграция с умным домом и сценариями', 'Приоритетная поддержка 24/7'] },
   ]
   return (
-    <section id="kits" className="py-20">
+    <section id="kits" className="bg-cream py-20">
       <div className="container-x">
-        <Reveal className="text-center">
-          <span className="eyebrow">Готовые решения</span>
-          <h2 className="mt-4 font-display text-3xl font-extrabold sm:text-4xl">Два комплекта под ваш дом</h2>
-          <p className="mx-auto mt-3 max-w-xl text-white/70">
-            Точную конфигурацию подберём бесплатно на выезде — под площадь, планировку и задачи.
-          </p>
+        <Reveal className="mx-auto max-w-2xl text-center">
+          <span className="eyebrow eyebrow-center justify-center">Готовые решения</span>
+          <h2 className="mt-4 text-4xl font-semibold sm:text-5xl">Два комплекта под ваш дом</h2>
+          <p className="mx-auto mt-4 max-w-xl text-ink-500">Точную конфигурацию подберём бесплатно на выезде — под площадь, планировку и задачи.</p>
         </Reveal>
-
         <div className="mt-12 grid gap-6 lg:grid-cols-2">
           {kits.map((k, idx) => (
             <Reveal key={k.name} delay={idx * 100}>
-              <div
-                className={`group flex h-full flex-col overflow-hidden rounded-3xl border ${
-                  k.featured ? 'border-brand-orange/50 bg-brand-orange/[0.06]' : 'border-white/10 bg-white/[0.03]'
-                } shadow-card`}
-              >
+              <div className={`group flex h-full flex-col overflow-hidden rounded-3xl border bg-white shadow-card ${k.featured ? 'border-gold' : 'border-ink/10'}`}>
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <img src={media(k.img)} alt={`Комплект ${k.name}`} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
-                  {k.featured && (
-                    <span className="absolute right-4 top-4 rounded-full bg-brand-orange px-3 py-1 text-xs font-bold text-white">
-                      🏆 Хит продаж
-                    </span>
-                  )}
+                  {k.featured && (<span className="absolute right-4 top-4 rounded-full bg-gold px-3 py-1 text-xs font-bold text-white">Хит продаж</span>)}
                 </div>
                 <div className="flex flex-1 flex-col p-6 sm:p-8">
-                  <span className="text-xs font-bold uppercase tracking-wider text-brand-teal">{k.tag}</span>
-                  <h3 className="mt-1 font-display text-2xl font-extrabold">«{k.name}»</h3>
-                  <div className="mt-2 font-display text-3xl font-extrabold text-white">{k.price}</div>
-                  <ul className="mt-5 flex-1 space-y-2.5">
+                  <span className="text-xs font-bold uppercase tracking-[0.2em] text-gold">{k.tag}</span>
+                  <h3 className="mt-2 text-3xl font-semibold text-ink">«{k.name}»</h3>
+                  <div className="mt-2 font-display text-4xl font-semibold text-ink">{k.price}</div>
+                  <ul className="mt-6 flex-1 space-y-2.5">
                     {k.items.map((it) => (
-                      <li key={it} className="flex gap-2.5 text-sm text-white/80">
-                        <Ico.check className="mt-0.5 h-4 w-4 shrink-0 text-brand-teal" />
-                        <span>{it}</span>
-                      </li>
+                      <li key={it} className="flex gap-2.5 text-sm text-ink-500"><Ico.check className="mt-0.5 h-4 w-4 shrink-0 text-gold" /><span>{it}</span></li>
                     ))}
                   </ul>
-                  <button onClick={() => onPick(k.name)} className={`mt-6 ${k.featured ? 'btn-primary' : 'btn-ghost'} w-full`}>
-                    Выбрать «{k.name}»
-                  </button>
+                  <button onClick={() => onPick(k.name)} className={`mt-7 w-full ${k.featured ? 'btn-primary' : 'btn-outline'}`}>Выбрать «{k.name}»</button>
                 </div>
               </div>
             </Reveal>
@@ -397,20 +306,17 @@ function Benefits() {
     { n: '100', u: '%', t: 'объектов сдаём без замечаний' },
   ]
   return (
-    <section className="py-20">
+    <section className="bg-cream-200 py-20">
       <div className="container-x">
         <Reveal className="text-center">
-          <span className="eyebrow">Почему ВИДЖИО</span>
-          <h2 className="mt-4 font-display text-3xl font-extrabold sm:text-4xl">Цифры, за которыми — спокойствие</h2>
+          <span className="eyebrow eyebrow-center justify-center">Почему ВИДЖИО</span>
+          <h2 className="mt-4 text-4xl font-semibold sm:text-5xl">Цифры, за которыми — спокойствие</h2>
         </Reveal>
-        <div className="mt-12 grid grid-cols-2 gap-4 lg:grid-cols-3">
+        <div className="mt-12 grid grid-cols-2 gap-5 lg:grid-cols-3">
           {b.map((x, idx) => (
             <Reveal key={x.t} delay={idx * 60} className="card text-center">
-              <div className="font-display text-4xl font-extrabold text-brand-teal sm:text-5xl">
-                {x.n}
-                <span className="ml-1 text-xl text-white/60">{x.u}</span>
-              </div>
-              <p className="mt-3 text-sm text-white/70">{x.t}</p>
+              <div className="font-display text-5xl font-semibold text-gold">{x.n}<span className="ml-1 text-xl text-ink-500">{x.u}</span></div>
+              <p className="mt-3 text-sm text-ink-500">{x.t}</p>
             </Reveal>
           ))}
         </div>
@@ -428,26 +334,58 @@ function Process() {
     { n: '04', t: 'Запуск и обучение', d: 'Настроим приложение, всё покажем и научим пользоваться.' },
   ]
   return (
-    <section className="py-20">
-      <div className="container-x grid gap-10 lg:grid-cols-2 lg:items-center">
+    <section className="bg-cream py-20">
+      <div className="container-x grid gap-12 lg:grid-cols-2 lg:items-center">
         <Reveal>
           <span className="eyebrow">Как работаем</span>
-          <h2 className="mt-4 font-display text-3xl font-extrabold sm:text-4xl">4 шага — и дом под защитой</h2>
-          <div className="mt-8 space-y-5">
+          <h2 className="mt-4 text-4xl font-semibold sm:text-5xl">4 шага — и дом под защитой</h2>
+          <div className="mt-10 space-y-6">
             {steps.map((s) => (
-              <div key={s.n} className="flex gap-4">
-                <div className="font-display text-2xl font-extrabold text-brand-orange">{s.n}</div>
-                <div>
-                  <h3 className="text-lg font-bold">{s.t}</h3>
-                  <p className="mt-1 text-sm text-white/70">{s.d}</p>
+              <div key={s.n} className="flex gap-5">
+                <div className="font-display text-3xl font-semibold text-gold">{s.n}</div>
+                <div className="border-b border-ink/10 pb-5">
+                  <h3 className="text-lg font-bold text-ink">{s.t}</h3>
+                  <p className="mt-1 text-sm text-ink-500">{s.d}</p>
                 </div>
               </div>
             ))}
           </div>
         </Reveal>
-        <Reveal delay={120} className="overflow-hidden rounded-3xl border border-white/10 shadow-card">
+        <Reveal delay={120} className="overflow-hidden rounded-3xl border border-ink/10 shadow-soft">
           <img src={media('process-engineer.jpg')} alt="Инженер ВИДЖИО устанавливает камеру видеонаблюдения" className="aspect-[3/2] w-full object-cover" />
         </Reveal>
+      </div>
+    </section>
+  )
+}
+
+/* -------------------------------- Проекты ---------------------------------- */
+function Projects() {
+  const cases = [
+    { img: 'case-1-villa.jpg', t: 'Дом 450 м², Новая Рига', d: '8 камер 4K по периметру + сигнализация. Смонтировано за 2 дня.' },
+    { img: 'case-2-brick.jpg', t: 'Коттедж 320 м², Дмитровское ш.', d: 'Видеонаблюдение, датчики протечки и дыма, умный замок.' },
+    { img: 'case-3-estate.jpg', t: 'Усадьба 760 м², Минское ш.', d: 'Комплекс «Бастион»: периметр, датчики, умные замки, контроль доступа.' },
+  ]
+  return (
+    <section id="projects" className="bg-cream-200 py-20">
+      <div className="container-x">
+        <Reveal className="text-center">
+          <span className="eyebrow eyebrow-center justify-center">Наши работы</span>
+          <h2 className="mt-4 text-4xl font-semibold sm:text-5xl">Объекты, которые мы защитили</h2>
+        </Reveal>
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
+          {cases.map((c, idx) => (
+            <Reveal key={c.t} delay={idx * 90} className="group overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-card">
+              <div className="aspect-[3/2] overflow-hidden">
+                <img src={media(c.img)} alt={c.t} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+              </div>
+              <div className="p-5">
+                <h3 className="font-bold text-ink">{c.t}</h3>
+                <p className="mt-2 text-sm text-ink-500">{c.d}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
       </div>
     </section>
   )
@@ -456,28 +394,20 @@ function Process() {
 /* ------------------------------- Приложение -------------------------------- */
 function AppBlock() {
   return (
-    <section className="relative overflow-hidden py-20">
-      <div className="container-x grid gap-10 lg:grid-cols-2 lg:items-center">
-        <Reveal className="order-2 overflow-hidden rounded-3xl border border-white/10 shadow-card lg:order-1">
+    <section className="bg-cream py-20">
+      <div className="container-x grid gap-12 lg:grid-cols-2 lg:items-center">
+        <Reveal className="order-2 overflow-hidden rounded-3xl border border-ink/10 shadow-soft lg:order-1">
           <video className="aspect-video w-full object-cover" autoPlay muted loop playsInline poster={media('app-phone.jpg')}>
             <source src={media('app-video.mp4')} type="video/mp4" />
           </video>
         </Reveal>
         <Reveal delay={100} className="order-1 lg:order-2">
           <span className="eyebrow">Контроль в кармане</span>
-          <h2 className="mt-4 font-display text-3xl font-extrabold sm:text-4xl">
-            Весь дом — в одном приложении
-          </h2>
-          <p className="mt-4 text-white/80">
-            Смотрите все камеры онлайн, получайте мгновенные тревоги и управляйте системой
-            безопасности — из любой точки мира, со смартфона.
-          </p>
+          <h2 className="mt-4 text-4xl font-semibold sm:text-5xl">Весь дом — в одном приложении</h2>
+          <p className="mt-5 text-ink-500">Смотрите все камеры онлайн, получайте мгновенные тревоги и управляйте системой безопасности — из любой точки мира, со смартфона.</p>
           <ul className="mt-6 space-y-3">
             {['Живой просмотр и архив за 30 дней', 'Пуш-уведомления о движении и тревогах', 'Сценарии умного дома', 'Один аккаунт для всей семьи'].map((t) => (
-              <li key={t} className="flex items-center gap-3 text-white/85">
-                <span className="grid h-7 w-7 place-items-center rounded-lg bg-brand-teal/15 text-brand-teal"><Ico.check className="h-4 w-4" /></span>
-                {t}
-              </li>
+              <li key={t} className="flex items-center gap-3 text-ink"><span className="grid h-7 w-7 place-items-center rounded-lg bg-gold-soft text-gold"><Ico.check className="h-4 w-4" /></span>{t}</li>
             ))}
           </ul>
         </Reveal>
@@ -486,33 +416,31 @@ function AppBlock() {
   )
 }
 
-/* --------------------------------- Кейсы ----------------------------------- */
-function Cases() {
-  const cases = [
-    { img: 'case-1-villa.jpg', t: 'Дом 450 м², Новая Рига', d: '8 камер 4K по периметру + сигнализация. Смонтировано за 2 дня.' },
-    { img: 'case-2-brick.jpg', t: 'Коттедж 320 м², Дмитровское ш.', d: 'Видеонаблюдение, датчики протечки и дыма, умный замок.' },
-    { img: 'case-3-estate.jpg', t: 'Усадьба 760 м², Минское ш.', d: 'Комплекс «Бастион»: периметр, датчики, умные замки, контроль доступа.' },
-  ]
+/* --------------------------------- Команда --------------------------------- */
+function Team() {
+  const stats = [['14 лет', 'на рынке'], ['850+', 'объектов'], ['Штат', 'свои инженеры'], ['5 лет', 'гарантия']]
   return (
-    <section className="py-20">
-      <div className="container-x">
-        <Reveal className="text-center">
-          <span className="eyebrow">Наши работы</span>
-          <h2 className="mt-4 font-display text-3xl font-extrabold sm:text-4xl">Объекты, которые мы защитили</h2>
+    <section id="team" className="bg-ink py-20 text-cream">
+      <div className="container-x grid gap-12 lg:grid-cols-2 lg:items-center">
+        <Reveal className="overflow-hidden rounded-3xl border border-white/10 shadow-soft">
+          <img src={media('process-engineer.jpg')} alt="Команда инженеров ВИДЖИО" className="aspect-[3/2] w-full object-cover" />
         </Reveal>
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {cases.map((c, idx) => (
-            <Reveal key={c.t} delay={idx * 90} className="group overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] shadow-card">
-              <div className="aspect-[3/2] overflow-hidden">
-                <img src={media(c.img)} alt={c.t} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+        <Reveal delay={100}>
+          <span className="eyebrow">Команда</span>
+          <h2 className="mt-4 text-4xl font-semibold sm:text-5xl">Инженеры, а не случайные подрядчики</h2>
+          <p className="mt-5 text-cream/80">
+            Монтаж выполняют штатные инженеры ВИДЖИО с профильным опытом. Мы сами проектируем, монтируем
+            и обслуживаем — поэтому за результат отвечает одна команда, а не цепочка субподрядчиков.
+          </p>
+          <div className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-4">
+            {stats.map(([n, t]) => (
+              <div key={t}>
+                <div className="font-display text-3xl font-semibold text-gold">{n}</div>
+                <div className="mt-1 text-xs text-cream/60">{t}</div>
               </div>
-              <div className="p-5">
-                <h3 className="font-bold">{c.t}</h3>
-                <p className="mt-2 text-sm text-white/70">{c.d}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
+            ))}
+          </div>
+        </Reveal>
       </div>
     </section>
   )
@@ -526,23 +454,20 @@ function Reviews() {
     { n: 'Сергей', c: 'Одинцово', t: 'Сделали комплекс: видео + датчики протечки. Один раз сработал датчик — пуш пришёл мгновенно, успели приехать. Реально работает.' },
   ]
   return (
-    <section className="py-20">
+    <section id="reviews" className="bg-cream py-20">
       <div className="container-x">
         <Reveal className="text-center">
-          <span className="eyebrow">Отзывы</span>
-          <h2 className="mt-4 font-display text-3xl font-extrabold sm:text-4xl">Что говорят владельцы домов</h2>
+          <span className="eyebrow eyebrow-center justify-center">Отзывы</span>
+          <h2 className="mt-4 text-4xl font-semibold sm:text-5xl">Что говорят владельцы домов</h2>
         </Reveal>
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {r.map((x, idx) => (
             <Reveal key={x.n} delay={idx * 90} className="card">
-              <div className="text-brand-orange">★★★★★</div>
-              <p className="mt-3 text-white/85">«{x.t}»</p>
-              <div className="mt-4 flex items-center gap-3">
-                <span className="grid h-10 w-10 place-items-center rounded-full bg-brand-teal/20 font-bold text-brand-teal">{x.n[0]}</span>
-                <div className="text-sm">
-                  <div className="font-bold">{x.n}</div>
-                  <div className="text-white/60">{x.c}</div>
-                </div>
+              <div className="tracking-widest text-gold">★★★★★</div>
+              <p className="mt-3 text-ink">«{x.t}»</p>
+              <div className="mt-5 flex items-center gap-3">
+                <span className="grid h-10 w-10 place-items-center rounded-full bg-gold-soft font-bold text-gold">{x.n[0]}</span>
+                <div className="text-sm"><div className="font-bold text-ink">{x.n}</div><div className="text-ink-500">{x.c}</div></div>
               </div>
             </Reveal>
           ))}
@@ -561,18 +486,18 @@ function Guarantees() {
     { i: Ico.clock, t: 'Соблюдаем сроки', d: 'Срок монтажа закреплён в договоре — и мы его держим.' },
   ]
   return (
-    <section className="py-20">
+    <section className="bg-cream-200 py-20">
       <div className="container-x">
         <Reveal className="text-center">
-          <span className="eyebrow">Гарантии</span>
-          <h2 className="mt-4 font-display text-3xl font-extrabold sm:text-4xl">Берём ответственность на себя</h2>
+          <span className="eyebrow eyebrow-center justify-center">Гарантии</span>
+          <h2 className="mt-4 text-4xl font-semibold sm:text-5xl">Берём ответственность на себя</h2>
         </Reveal>
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {g.map((x, idx) => (
             <Reveal key={x.t} delay={idx * 70} className="card text-center">
-              <x.i className="mx-auto h-10 w-10 text-brand-teal" />
-              <h3 className="mt-4 font-bold">{x.t}</h3>
-              <p className="mt-2 text-sm text-white/70">{x.d}</p>
+              <x.i className="mx-auto h-10 w-10 text-gold" />
+              <h3 className="mt-4 font-bold text-ink">{x.t}</h3>
+              <p className="mt-2 text-sm text-ink-500">{x.d}</p>
             </Reveal>
           ))}
         </div>
@@ -598,7 +523,6 @@ function Quiz({ openRef }) {
   const total = QUIZ.length
 
   const estimate = useMemo(() => {
-    // грубая прикидка диапазона по ответам
     let base = 159000
     const area = ans[0]
     if (area === '300–500 м²') base += 60000
@@ -616,84 +540,54 @@ function Quiz({ openRef }) {
     setAns((a) => ({ ...a, [step]: opt }))
     setTimeout(() => setStep((s) => Math.min(s + 1, total)), 150)
   }
-
   const submit = (e) => {
     e.preventDefault()
     if (!agree) return
-    const summary =
-      `Заявка с калькулятора ВИДЖИО:%0A` +
-      QUIZ.map((q, i) => `• ${q.q}: ${ans[i] || '—'}`).join('%0A') +
-      `%0A• Ориентир: ${estimate}%0A• Телефон: ${phone}`
+    const summary = `Заявка с калькулятора ВИДЖИО:%0A` + QUIZ.map((q, i) => `• ${q.q}: ${ans[i] || '—'}`).join('%0A') + `%0A• Ориентир: ${estimate}%0A• Телефон: ${phone}`
     window.open(MAX(decodeURIComponent(summary)), '_blank')
     setDone(true)
   }
 
   return (
-    <section id="quiz" ref={openRef} className="py-20">
+    <section id="quiz" ref={openRef} className="bg-cream py-20">
       <div className="container-x">
-        <div className="overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-navy-700 to-navy-900 shadow-card">
+        <div className="overflow-hidden rounded-3xl border border-ink/10 bg-white shadow-soft">
           <div className="grid lg:grid-cols-5">
-            <div className="border-b border-white/10 p-8 lg:col-span-2 lg:border-b-0 lg:border-r">
+            <div className="border-b border-ink/10 bg-ink p-8 text-cream lg:col-span-2 lg:border-b-0">
               <span className="eyebrow">Калькулятор</span>
-              <h2 className="mt-4 font-display text-2xl font-extrabold sm:text-3xl">
-                Рассчитайте стоимость защиты дома
-              </h2>
-              <p className="mt-3 text-sm text-white/70">
-                4 вопроса — и вы получите ориентир по цене. Точную смету пришлём за 3 часа.
-              </p>
-              <div className="mt-6 flex items-center gap-2">
-                {Array.from({ length: total }).map((_, i) => (
-                  <span key={i} className={`h-1.5 flex-1 rounded-full ${i <= step ? 'bg-brand-orange' : 'bg-white/15'}`} />
-                ))}
+              <h2 className="mt-4 text-3xl font-semibold sm:text-4xl">Рассчитайте стоимость защиты дома</h2>
+              <p className="mt-4 text-cream/70">Ответьте на 4 вопроса — покажем ориентир по цене и пришлём точную смету за 3 часа.</p>
+              <div className="mt-8 hidden gap-2 lg:flex">
+                {QUIZ.map((_, i) => (<span key={i} className={`h-1.5 flex-1 rounded-full ${i <= step ? 'bg-gold' : 'bg-white/15'}`} />))}
               </div>
             </div>
-
             <div className="p-8 lg:col-span-3">
               {done ? (
                 <div className="flex h-full flex-col items-center justify-center text-center">
-                  <span className="grid h-16 w-16 place-items-center rounded-full bg-brand-teal/20 text-brand-teal"><Ico.check className="h-8 w-8" /></span>
-                  <h3 className="mt-4 font-display text-2xl font-bold">Заявка отправлена!</h3>
-                  <p className="mt-2 text-white/70">Мы открыли чат — отправьте сообщение, и инженер свяжется с вами в течение 15 минут.</p>
+                  <div className="grid h-16 w-16 place-items-center rounded-full bg-gold-soft text-gold"><Ico.check className="h-8 w-8" /></div>
+                  <h3 className="mt-4 text-2xl font-semibold text-ink">Заявка отправлена!</h3>
+                  <p className="mt-2 text-ink-500">Мы уже считаем вашу смету и свяжемся в течение 15 минут.</p>
                 </div>
               ) : step < total ? (
                 <div>
-                  <div className="text-sm text-brand-teal">Шаг {step + 1} из {total}</div>
-                  <h3 className="mt-2 font-display text-xl font-bold sm:text-2xl">{QUIZ[step].q}</h3>
+                  <div className="text-sm font-semibold text-gold">Шаг {step + 1} из {total}</div>
+                  <h3 className="mt-2 text-2xl font-semibold text-ink">{QUIZ[step].q}</h3>
                   <div className="mt-5 grid gap-3 sm:grid-cols-2">
                     {QUIZ[step].opts.map((o) => (
-                      <button
-                        key={o}
-                        onClick={() => pick(o)}
-                        className={`rounded-xl border px-4 py-4 text-left text-sm font-semibold transition ${
-                          ans[step] === o ? 'border-brand-orange bg-brand-orange/15' : 'border-white/15 bg-white/5 hover:border-brand-teal/50'
-                        }`}
-                      >
-                        {o}
-                      </button>
+                      <button key={o} onClick={() => pick(o)} className={`rounded-xl border px-4 py-4 text-left text-sm font-semibold transition ${ans[step] === o ? 'border-gold bg-gold-soft text-ink' : 'border-ink/15 bg-cream text-ink hover:border-gold'}`}>{o}</button>
                     ))}
                   </div>
-                  {step > 0 && (
-                    <button onClick={() => setStep((s) => s - 1)} className="mt-5 text-sm text-white/60 hover:text-white">← Назад</button>
-                  )}
+                  {step > 0 && (<button onClick={() => setStep((s) => s - 1)} className="mt-5 text-sm text-ink-500 hover:text-gold">← Назад</button>)}
                 </div>
               ) : (
                 <form onSubmit={submit}>
-                  <div className="rounded-xl border border-brand-teal/30 bg-brand-teal/10 p-5">
-                    <div className="text-sm text-white/70">Предварительный расчёт для вашего дома:</div>
-                    <div className="mt-1 font-display text-3xl font-extrabold text-brand-teal">{estimate}</div>
+                  <div className="rounded-xl border border-gold/40 bg-gold-soft/60 p-5">
+                    <div className="text-sm text-ink-500">Предварительный расчёт для вашего дома:</div>
+                    <div className="mt-1 font-display text-4xl font-semibold text-ink">{estimate}</div>
                   </div>
-                  <h3 className="mt-6 font-bold">Куда отправить точную смету?</h3>
-                  <input
-                    required
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+7 (___) ___-__-__"
-                    className="mt-3 w-full rounded-xl border border-white/15 bg-navy-900 px-4 py-4 text-white placeholder-white/40 outline-none focus:border-brand-teal"
-                  />
-                  <div className="mt-4">
-                    <ConsentCheck id="consent-quiz" checked={agree} onChange={setAgree} />
-                  </div>
+                  <h3 className="mt-6 font-bold text-ink">Куда отправить точную смету?</h3>
+                  <input required type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+7 (___) ___-__-__" className="mt-3 w-full rounded-xl border border-ink/15 bg-cream px-4 py-4 text-ink placeholder-ink-500/50 outline-none focus:border-gold" />
+                  <div className="mt-4"><ConsentCheck id="consent-quiz" checked={agree} onChange={setAgree} /></div>
                   <button type="submit" disabled={!agree} className="btn-primary mt-4 w-full disabled:cursor-not-allowed disabled:opacity-50">Получить смету в MAX</button>
                 </form>
               )}
@@ -718,23 +612,21 @@ function Faq() {
   ]
   const [open, setOpen] = useState(0)
   return (
-    <section className="py-20">
+    <section id="faq" className="bg-cream py-20">
       <div className="container-x max-w-3xl">
         <Reveal className="text-center">
-          <span className="eyebrow">Вопросы и ответы</span>
-          <h2 className="mt-4 font-display text-3xl font-extrabold sm:text-4xl">Отвечаем на частые вопросы</h2>
+          <span className="eyebrow eyebrow-center justify-center">Вопросы и ответы</span>
+          <h2 className="mt-4 text-4xl font-semibold sm:text-5xl">Отвечаем на частые вопросы</h2>
         </Reveal>
         <div className="mt-10 space-y-3">
           {items.map((it, i) => (
-            <div key={it.q} className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+            <div key={it.q} className="overflow-hidden rounded-2xl border border-ink/10 bg-white">
               <button onClick={() => setOpen(open === i ? -1 : i)} className="flex w-full items-center justify-between gap-4 p-5 text-left">
-                <span className="font-semibold">{it.q}</span>
-                <Ico.chevron className={`h-5 w-5 shrink-0 text-brand-teal transition-transform ${open === i ? 'rotate-180' : ''}`} />
+                <span className="font-semibold text-ink">{it.q}</span>
+                <Ico.chevron className={`h-5 w-5 shrink-0 text-gold transition-transform ${open === i ? 'rotate-180' : ''}`} />
               </button>
               <div className={`grid transition-all duration-300 ${open === i ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
-                <div className="overflow-hidden">
-                  <p className="px-5 pb-5 text-sm text-white/70">{it.a}</p>
-                </div>
+                <div className="overflow-hidden"><p className="px-5 pb-5 text-sm text-ink-500">{it.a}</p></div>
               </div>
             </div>
           ))}
@@ -755,34 +647,25 @@ function FinalCta() {
     window.open(MAX(`Здравствуйте! Меня зовут ${name || '—'}, мой телефон ${phone}. Хочу получить расчёт со скидкой 10%.`), '_blank')
   }
   return (
-    <section id="final" className="relative overflow-hidden py-20">
-      <img src={media('final-night-house.png')} alt="" className="absolute inset-0 h-full w-full object-cover opacity-30" />
-      <div className="absolute inset-0 bg-gradient-to-t from-navy-900 via-navy-900/85 to-navy-900/70" />
+    <section id="final" className="relative overflow-hidden bg-ink py-20 text-cream">
+      <img src={media('final-night-house.png')} alt="" className="absolute inset-0 h-full w-full object-cover opacity-20" />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/85 to-ink/70" />
       <div className="container-x relative">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="font-display text-3xl font-extrabold sm:text-4xl">
-            Узнайте стоимость защиты вашего дома — со скидкой 10%
-          </h2>
-          <p className="mt-3 text-white/80">Перезвоним за 15 минут, посчитаем точную смету. Без навязывания.</p>
+          <span className="eyebrow eyebrow-center justify-center">Заявка</span>
+          <h2 className="mt-4 text-4xl font-semibold sm:text-5xl">Узнайте стоимость защиты дома — со скидкой 10%</h2>
+          <p className="mt-4 text-cream/80">Перезвоним за 15 минут, посчитаем точную смету. Без навязывания.</p>
         </div>
         <form onSubmit={submit} className="mx-auto mt-8 grid max-w-2xl gap-3 sm:grid-cols-2">
-          <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Ваше имя" className="rounded-xl border border-white/15 bg-navy-900/80 px-4 py-4 text-white placeholder-white/40 outline-none focus:border-brand-teal" />
-          <input required type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+7 (___) ___-__-__" className="rounded-xl border border-white/15 bg-navy-900/80 px-4 py-4 text-white placeholder-white/40 outline-none focus:border-brand-teal" />
-          <div className="sm:col-span-2">
-            <ConsentCheck id="consent-final" checked={agree} onChange={setAgree} />
-          </div>
+          <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Ваше имя" className="rounded-xl border border-white/15 bg-white/5 px-4 py-4 text-cream placeholder-cream/40 outline-none focus:border-gold" />
+          <input required type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+7 (___) ___-__-__" className="rounded-xl border border-white/15 bg-white/5 px-4 py-4 text-cream placeholder-cream/40 outline-none focus:border-gold" />
+          <div className="sm:col-span-2"><ConsentCheck id="consent-final" checked={agree} onChange={setAgree} tone="dark" /></div>
           <button type="submit" disabled={!agree} className="btn-primary sm:col-span-2 disabled:cursor-not-allowed disabled:opacity-50">Получить расчёт со скидкой 10%</button>
         </form>
         <div className="mx-auto mt-5 flex max-w-2xl flex-col gap-3 sm:flex-row sm:justify-center">
-          <a href={MAX('Здравствуйте! Хочу расчёт видеонаблюдения для дома.')} target="_blank" rel="noreferrer" className="btn-max flex-1 sm:flex-none">
-            <Ico.max className="h-5 w-5" /> MAX
-          </a>
-          <a href={TG} target="_blank" rel="noreferrer" className="btn-ghost flex-1 sm:flex-none">
-            <Ico.tg className="h-5 w-5 text-brand-teal" /> Telegram
-          </a>
-          <a href={`tel:+${PHONE_RAW}`} className="btn-ghost flex-1 sm:flex-none">
-            <Ico.phone className="h-5 w-5 text-brand-teal" /> {PHONE_HUMAN}
-          </a>
+          <a href={MAX('Здравствуйте! Хочу расчёт видеонаблюдения для дома.')} target="_blank" rel="noreferrer" className="btn-max flex-1 sm:flex-none"><Ico.max className="h-5 w-5" /> MAX</a>
+          <a href={TG} target="_blank" rel="noreferrer" className="btn-tg flex-1 sm:flex-none"><Ico.tg className="h-5 w-5" /> Telegram</a>
+          <a href={`tel:+${PHONE_RAW}`} className="btn-outline flex-1 border-white/25 text-cream hover:border-gold hover:text-gold sm:flex-none"><Ico.phone className="h-5 w-5" /> {PHONE_HUMAN}</a>
         </div>
       </div>
     </section>
@@ -792,43 +675,38 @@ function FinalCta() {
 /* --------------------------------- Футер ----------------------------------- */
 function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-navy-900 py-12">
+    <footer className="border-t border-white/10 bg-ink-900 py-12 text-cream">
       <div className="container-x grid gap-8 md:grid-cols-3">
         <div>
           <Logo />
-          <p className="mt-4 max-w-xs text-sm text-white/60">
-            Видеонаблюдение и системы безопасности под ключ для загородных домов от 300 м² в Москве
-            и Московской области.
-          </p>
+          <p className="mt-4 max-w-xs text-sm text-cream/60">Видеонаблюдение и системы безопасности под ключ для загородных домов от 300 м² в Москве и Московской области.</p>
         </div>
-        <div className="text-sm text-white/70">
-          <div className="font-bold text-white">Контакты</div>
-          <a href={`tel:+${PHONE_RAW}`} className="mt-3 block hover:text-brand-teal">{PHONE_HUMAN}</a>
-          <a href="tel:+74956986108" className="mt-1 block hover:text-brand-teal">+7 (495) 698-61-08</a>
-          <a href="mailto:vidzhio@yandex.ru" className="mt-1 block hover:text-brand-teal">vidzhio@yandex.ru</a>
+        <div className="text-sm text-cream/70">
+          <div className="font-bold text-cream">Контакты</div>
+          <a href={`tel:+${PHONE_RAW}`} className="mt-3 block hover:text-gold">{PHONE_HUMAN}</a>
+          <a href="tel:+74956986108" className="mt-1 block hover:text-gold">+7 (495) 698-61-08</a>
+          <a href="mailto:vidzhio@yandex.ru" className="mt-1 block hover:text-gold">vidzhio@yandex.ru</a>
           <div className="mt-2">Москва и Московская область</div>
           <div className="mt-2">Пн–Вс, 9:00–21:00</div>
           <div className="mt-3 flex gap-3">
-            <a href={MAX('Здравствуйте!')} target="_blank" rel="noreferrer" aria-label="Написать в MAX" className="grid h-10 w-10 place-items-center rounded-lg bg-white/5 text-[#9B4DFF] hover:bg-white/10"><Ico.max className="h-5 w-5" /></a>
-            <a href={TG} target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-lg bg-white/5 text-brand-teal hover:bg-white/10"><Ico.tg className="h-5 w-5" /></a>
+            <a href={MAX('Здравствуйте!')} target="_blank" rel="noreferrer" aria-label="Написать в MAX" className="grid h-10 w-10 place-items-center rounded-lg bg-white/5 text-[#B24DFF] hover:bg-white/10"><Ico.max className="h-5 w-5" /></a>
+            <a href={TG} target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-lg bg-white/5 text-[#2AABEE] hover:bg-white/10"><Ico.tg className="h-5 w-5" /></a>
           </div>
         </div>
-        <div className="text-sm text-white/60">
-          <div className="font-bold text-white">Реквизиты</div>
+        <div className="text-sm text-cream/60">
+          <div className="font-bold text-cream">Реквизиты</div>
           <p className="mt-3">ООО «Виджио»</p>
           <p className="mt-1">ИНН 7723877678 · КПП 772301001</p>
           <p className="mt-1">ОГРН 1137746582270</p>
           <p className="mt-1">109469, г. Москва, ул. Братиславская, д. 27, корп. 1, пом. VI, ком. 12–20</p>
           <p className="mt-1">Лицензия МЧС № 77-06-2022-005285 от 29.12.2022</p>
-          <p className="mt-2 text-white/45">Цены на сайте носят информационный характер и не являются публичной офертой.</p>
-          <a href={POLICY_HREF} target="_blank" rel="noreferrer" className="mt-2 inline-block underline hover:text-white">Политика обработки персональных данных</a>
+          <p className="mt-2 text-cream/45">Цены на сайте носят информационный характер и не являются публичной офертой.</p>
+          <a href={POLICY_HREF} target="_blank" rel="noreferrer" className="mt-2 inline-block underline hover:text-gold">Политика обработки персональных данных</a>
         </div>
       </div>
-      <div className="container-x mt-10 border-t border-white/10 pt-6 text-center text-xs text-white/45">
+      <div className="container-x mt-10 border-t border-white/10 pt-6 text-center text-xs text-cream/45">
         © {new Date().getFullYear()} ВИДЖИО. Все права защищены. · Сайт создан компанией{' '}
-        <a href="https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering" target="_blank" rel="noreferrer" className="font-semibold text-brand-teal hover:underline">
-          ЛендингСфера
-        </a>
+        <a href="https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering" target="_blank" rel="noreferrer" className="font-semibold text-gold hover:underline">ЛендингСфера</a>
       </div>
     </footer>
   )
@@ -837,11 +715,11 @@ function Footer() {
 /* ----------------------------- Мобильный CTA-бар --------------------------- */
 function MobileBar({ onCta }) {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-navy-900/95 p-3 backdrop-blur md:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-ink/10 bg-cream/95 p-3 backdrop-blur md:hidden">
       <div className="flex gap-2">
         <button onClick={onCta} className="btn-primary flex-1 !py-3 text-sm">Рассчитать</button>
         <a href={MAX('Здравствуйте! Хочу расчёт видеонаблюдения.')} target="_blank" rel="noreferrer" className="btn-max !px-4 !py-3"><Ico.max className="h-5 w-5" /></a>
-        <a href={`tel:+${PHONE_RAW}`} className="btn-ghost !px-4 !py-3"><Ico.phone className="h-5 w-5" /></a>
+        <a href={`tel:+${PHONE_RAW}`} className="btn-outline !px-4 !py-3"><Ico.phone className="h-5 w-5" /></a>
       </div>
     </div>
   )
@@ -864,14 +742,14 @@ function ExitPopup({ onCta }) {
   }, [])
   if (!show) return null
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4" onClick={() => setShow(false)}>
-      <div className="relative w-full max-w-md rounded-3xl border border-white/10 bg-navy-800 p-8 text-center shadow-2xl" onClick={(e) => e.stopPropagation()}>
-        <button onClick={() => setShow(false)} className="absolute right-4 top-4 text-2xl leading-none text-white/50 hover:text-white">×</button>
-        <div className="text-4xl">🎁</div>
-        <h3 className="mt-3 font-display text-2xl font-extrabold">Уже уходите?</h3>
-        <p className="mt-2 text-white/75">Заберите <b className="text-brand-teal">бесплатный аудит безопасности дома</b> + смету за 3 часа. И скидку 10% на монтаж.</p>
+    <div className="fixed inset-0 z-50 grid place-items-center bg-ink/70 p-4" onClick={() => setShow(false)}>
+      <div className="relative w-full max-w-md rounded-3xl border border-ink/10 bg-white p-8 text-center shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <button onClick={() => setShow(false)} className="absolute right-4 top-4 text-2xl leading-none text-ink-500 hover:text-ink">×</button>
+        <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-gold-soft text-gold"><Ico.shield className="h-7 w-7" /></div>
+        <h3 className="mt-4 text-3xl font-semibold text-ink">Уже уходите?</h3>
+        <p className="mt-2 text-ink-500">Заберите <b className="text-gold">бесплатный аудит безопасности дома</b> + смету за 3 часа. И скидку 10% на монтаж.</p>
         <button onClick={() => { setShow(false); onCta() }} className="btn-primary mt-5 w-full">Получить аудит бесплатно</button>
-        <a href={MAX('Здравствуйте! Хочу бесплатный аудит безопасности дома и смету.')} target="_blank" rel="noreferrer" className="btn-max mt-3 w-full"><Ico.max className="h-5 w-5" /> Написать в MAX</a>
+        <a href={MAX('Здравствуйте! Хочу бесплатный аудит безопасности дома и смету.')} target="_blank" rel="noreferrer" className="btn-outline mt-3 w-full"><Ico.max className="h-5 w-5" /> Написать в MAX</a>
       </div>
     </div>
   )
@@ -881,18 +759,19 @@ function ExitPopup({ onCta }) {
 export default function App() {
   const quizRef = useRef(null)
   const scrollToQuiz = () => quizRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-
   return (
     <div className="overflow-x-hidden">
       <Header onCta={scrollToQuiz} />
       <main>
         <Hero onCta={scrollToQuiz} />
+        <Advantages />
         <Pain />
         <Kits onPick={scrollToQuiz} />
         <Benefits />
         <Process />
+        <Projects />
         <AppBlock />
-        <Cases />
+        <Team />
         <Reviews />
         <Guarantees />
         <Quiz openRef={quizRef} />
