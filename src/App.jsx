@@ -208,9 +208,9 @@ function Hero({ onCta }) {
         muted
         loop
         playsInline
-        poster={media('hero-blueprint-end.png')}
+        poster={media('hero-cozy-end.png')}
       >
-        <source src={media('hero-blueprint.mp4')} type="video/mp4" />
+        <source src={media('hero-cozy.mp4')} type="video/mp4" />
       </video>
       <div className="absolute inset-0 bg-gradient-to-r from-navy-900 via-navy-900/85 to-navy-900/30" />
       <div className="absolute inset-0 bg-gradient-to-t from-navy-900 via-transparent to-navy-900/40" />
